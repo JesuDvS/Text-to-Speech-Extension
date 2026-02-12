@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      width: 400px;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+      background-color: #1e1e1e;
+      color: #fff;
+    }
+    
+    .container {
+      padding: 20px;
+    }
+    
+    h2 {
+      margin: 0 0 15px 0;
+      font-size: 18px;
+      color: #fff;
+    }
+    
+    .text-preview {
+      background-color: #2d2d2d;
+      border: 1px solid #3d3d3d;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+      max-height: 150px;
+      overflow-y: auto;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #ccc;
+    }
+    
+    .text-preview.empty {
+      color: #666;
+      font-style: italic;
+    }
+    
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    
+    .button {
+      flex: 1;
+      background-color: #7c5cdb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 15px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .button:hover {
+      background-color: #6a4bc4;
+    }
+    
+    .button:active {
+      background-color: #5a3bb0;
+    }
+    
+    .button:disabled {
+      background-color: #444;
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+    
+    .button-stop {
+      background-color: #dc2626;
+    }
+    
+    .button-stop:hover {
+      background-color: #b91c1c;
+    }
+    
+    .button-stop:active {
+      background-color: #991b1b;
+    }
+    
+    .settings {
+      margin-bottom: 15px;
+    }
+    
+    .setting-group {
+      margin-bottom: 12px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 13px;
+      color: #ccc;
+    }
+    
+    select, input[type="range"] {
+      width: 100%;
+      background-color: #2d2d2d;
+      border: 1px solid #3d3d3d;
+      border-radius: 6px;
+      padding: 8px;
+      color: #fff;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    
+    input[type="range"] {
+      padding: 0;
+    }
+    
+    select:focus {
+      outline: none;
+      border-color: #7c5cdb;
+    }
+    
+    .range-value {
+      display: inline-block;
+      margin-left: 10px;
+      color: #7c5cdb;
+      font-weight: 600;
+    }
+    
+    .status {
+      background-color: #0d0d0d;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 13px;
+      text-align: center;
+      color: #888;
+    }
+    
+    .status.speaking {
+      color: #4ade80;
+    }
+    
+    .icon {
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🔊 Lector de Texto</h2>
+    
+    <div class="text-preview empty" id="textPreview">
+      Selecciona texto en la página para leerlo en voz alta
+    </div>
+    
+    <div class="controls">
+      <button class="button" id="playBtn" disabled>
+        <span class="icon">▶️</span>
+        Reproducir
+      </button>
+      <button class="button button-stop" id="stopBtn" disabled>
+        <span class="icon">⏹️</span>
+        Detener
+      </button>
+    </div>
+    
+    <div class="settings">
+      <div class="setting-group">
+        <label for="voiceSelect">Voz:</label>
+        <select id="voiceSelect"></select>
+      </div>
+      
+      <div class="setting-group">
+        <label for="rateRange">
+          Velocidad: <span class="range-value" id="rateValue">1.0x</span>
+        </label>
+        <input type="range" id="rateRange" min="0.5" max="2" step="0.1" value="1">
+      </div>
+      
+      <div class="setting-group">
+        <label for="pitchRange">
+          Tono: <span class="range-value" id="pitchValue">1.0</span>
+        </label>
+        <input type="range" id="pitchRange" min="0.5" max="2" step="0.1" value="1">
+      </div>
+    </div>
+    
+    <div class="status" id="status">
+      Listo para leer
+    </div>
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>

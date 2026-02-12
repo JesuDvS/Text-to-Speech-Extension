@@ -1,0 +1,7 @@
+*.png
+!icon.png
+*.json
+!manifest.json
+*.zip
+node_modules/
+.DS_Store
