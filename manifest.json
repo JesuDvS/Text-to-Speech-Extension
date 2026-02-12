@@ -8,6 +8,9 @@
     "scripting",
     "storage"
   ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
   "action": {
     "default_icon": "text-to-speech-icon.png",
     "default_popup": "index.html"

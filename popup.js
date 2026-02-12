@@ -72,29 +72,38 @@ if (synth.onvoiceschanged !== undefined) {
 loadVoices();
 
 // Obtener texto seleccionado de la página
+// Obtener texto seleccionado de la página
 async function getSelectedText() {
   try {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     
+    // Ejecutar en todos los frames (incluye el principal y los iframes)
     const results = await chrome.scripting.executeScript({
-      target: { tabId: tab.id },
+      target: { tabId: tab.id, allFrames: true },
       func: () => window.getSelection().toString()
     });
     
-    if (results && results[0] && results[0].result) {
-      selectedText = results[0].result.trim();
-      
-      if (selectedText) {
-        textPreview.textContent = selectedText;
-        textPreview.classList.remove('empty');
-        playBtn.disabled = false;
-        status.textContent = `${selectedText.length} caracteres seleccionados`;
-      } else {
-        textPreview.textContent = 'No hay texto seleccionado';
-        textPreview.classList.add('empty');
-        playBtn.disabled = true;
-        status.textContent = 'Selecciona texto en la página';
+    // Buscar texto en cualquiera de los frames
+    selectedText = '';
+    if (results) {
+      for (const result of results) {
+        if (result.result && result.result.trim()) {
+          selectedText = result.result.trim();
+          break; // Usar el primer texto encontrado
+        }
       }
+    }
+    
+    if (selectedText) {
+      textPreview.textContent = selectedText;
+      textPreview.classList.remove('empty');
+      playBtn.disabled = false;
+      status.textContent = `${selectedText.length} caracteres seleccionados`;
+    } else {
+      textPreview.textContent = 'No hay texto seleccionado';
+      textPreview.classList.add('empty');
+      playBtn.disabled = true;
+      status.textContent = 'Selecciona texto en la página';
     }
   } catch (error) {
     console.error('Error al obtener texto:', error);
