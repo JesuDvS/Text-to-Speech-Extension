@@ -19,15 +19,15 @@ function loadVoices() {
   voices = synth.getVoices();
   voiceSelect.innerHTML = '';
   
-  // Filtrar voces en español primero
-  const spanishVoices = voices.filter(voice => voice.lang.startsWith('en'));
+  // Filtrar voces en ingles primero
+  const englishVoices = voices.filter(voice => voice.lang.startsWith('en'));
   const otherVoices = voices.filter(voice => !voice.lang.startsWith('en'));
   
-  // Agregar voces en español primero
-  if (spanishVoices.length > 0) {
+  // Agregar voces en ingles primero
+  if (englishVoices.length > 0) {
     const spanishGroup = document.createElement('optgroup');
     spanishGroup.label = 'English';
-    spanishVoices.forEach((voice, index) => {
+    englishVoices.forEach((voice, index) => {
       const option = document.createElement('option');
       option.value = index;
       option.textContent = `${voice.name} (${voice.lang})`;
@@ -42,7 +42,7 @@ function loadVoices() {
     otherGroup.label = 'Otros idiomas';
     otherVoices.forEach((voice, index) => {
       const option = document.createElement('option');
-      option.value = spanishVoices.length + index;
+      option.value = englishVoices.length + index;
       option.textContent = `${voice.name} (${voice.lang})`;
       otherGroup.appendChild(option);
     });
