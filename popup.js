@@ -13,27 +13,28 @@ const status = document.getElementById('status');
 let selectedText = '';
 let synth = window.speechSynthesis;
 let voices = [];
+let checkingSelection = true;
 
 // Cargar voces disponibles
 function loadVoices() {
   voices = synth.getVoices();
   voiceSelect.innerHTML = '';
   
-  // Filtrar voces en ingles primero
+  // Filtrar voces en inglés primero
   const englishVoices = voices.filter(voice => voice.lang.startsWith('en'));
   const otherVoices = voices.filter(voice => !voice.lang.startsWith('en'));
   
-  // Agregar voces en ingles primero
+  // Agregar voces en inglés primero
   if (englishVoices.length > 0) {
-    const spanishGroup = document.createElement('optgroup');
-    spanishGroup.label = 'English';
+    const englishGroup = document.createElement('optgroup');
+    englishGroup.label = 'English';
     englishVoices.forEach((voice, index) => {
       const option = document.createElement('option');
       option.value = index;
       option.textContent = `${voice.name} (${voice.lang})`;
-      spanishGroup.appendChild(option);
+      englishGroup.appendChild(option);
     });
-    voiceSelect.appendChild(spanishGroup);
+    voiceSelect.appendChild(englishGroup);
   }
   
   // Agregar otras voces
@@ -72,8 +73,9 @@ if (synth.onvoiceschanged !== undefined) {
 loadVoices();
 
 // Obtener texto seleccionado de la página
-// Obtener texto seleccionado de la página
 async function getSelectedText() {
+  if (!checkingSelection) return;
+  
   try {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     
@@ -84,41 +86,49 @@ async function getSelectedText() {
     });
     
     // Buscar texto en cualquiera de los frames
-    selectedText = '';
+    let foundText = '';
     if (results) {
       for (const result of results) {
         if (result.result && result.result.trim()) {
-          selectedText = result.result.trim();
+          foundText = result.result.trim();
           break; // Usar el primer texto encontrado
         }
       }
     }
     
-    if (selectedText) {
-      textPreview.textContent = selectedText;
-      textPreview.classList.remove('empty');
-      playBtn.disabled = false;
-      status.textContent = `${selectedText.length} caracteres seleccionados`;
-    } else {
-      textPreview.textContent = 'No hay texto seleccionado';
-      textPreview.classList.add('empty');
-      playBtn.disabled = true;
-      status.textContent = 'Selecciona texto en la página';
+    // Solo actualizar si hay texto seleccionado
+    if (foundText) {
+      selectedText = foundText;
+      textPreview.value = selectedText;
+      updateStatus();
     }
   } catch (error) {
     console.error('Error al obtener texto:', error);
-    status.textContent = 'Error al obtener texto seleccionado';
+  }
+}
+
+// Actualizar estado
+function updateStatus() {
+  const currentText = textPreview.value.trim();
+  
+  if (currentText) {
+    playBtn.disabled = false;
+    status.textContent = `${currentText.length} caracteres listos para leer`;
+  } else {
+    playBtn.disabled = true;
+    status.textContent = 'Escribe o selecciona texto para leer';
   }
 }
 
 // Reproducir texto
 function speakText() {
-  if (!selectedText) return;
+  const textToSpeak = textPreview.value.trim();
+  if (!textToSpeak) return;
   
   // Detener cualquier reproducción en curso
   synth.cancel();
   
-  const utterance = new SpeechSynthesisUtterance(selectedText);
+  const utterance = new SpeechSynthesisUtterance(textToSpeak);
   
   // Configurar voz
   const selectedVoiceIndex = parseInt(voiceSelect.value);
@@ -185,8 +195,23 @@ voiceSelect.addEventListener('change', (e) => {
   chrome.storage.local.set({ selectedVoice: e.target.value });
 });
 
+// Escuchar cambios en el textarea
+textPreview.addEventListener('input', () => {
+  // Si el usuario está escribiendo, dejar de buscar texto seleccionado
+  checkingSelection = false;
+  updateStatus();
+});
+
+// Reactivar búsqueda de selección cuando el campo está vacío
+textPreview.addEventListener('focus', () => {
+  if (!textPreview.value.trim()) {
+    checkingSelection = true;
+  }
+});
+
 // Obtener texto seleccionado al abrir el popup
 getSelectedText();
+updateStatus();
 
 // Actualizar cada segundo por si el usuario selecciona texto
 setInterval(getSelectedText, 1000);
