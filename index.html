@@ -16,10 +16,40 @@
       padding: 20px;
     }
     
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 15px;
+    }
+    
     h2 {
-      margin: 0 0 15px 0;
+      margin: 0;
       font-size: 18px;
       color: #fff;
+    }
+    
+    .translate-toggle {
+      background-color: #2d2d2d;
+      color: #fff;
+      border: 2px solid #3d3d3d;
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .translate-toggle:hover {
+      border-color: #7c5cdb;
+    }
+    
+    .translate-toggle.active {
+      background-color: #7c5cdb;
+      border-color: #7c5cdb;
     }
     
     .text-preview {
@@ -47,6 +77,22 @@
     .text-preview:focus {
       outline: none;
       border-color: #7c5cdb;
+    }
+    
+    .translation-section {
+      display: none;
+      margin-bottom: 15px;
+    }
+    
+    .translation-section.active {
+      display: block;
+    }
+    
+    .translation-label {
+      font-size: 13px;
+      color: #ccc;
+      margin-bottom: 6px;
+      display: block;
     }
     
     .controls {
@@ -160,7 +206,12 @@
 </head>
 <body>
   <div class="container">
-    <h2>🔊 Lector de Texto</h2>
+    <div class="header">
+      <h2>🔊 Lector de Texto</h2>
+      <button class="translate-toggle" id="translateToggle">
+        🌐 Traducir
+      </button>
+    </div>
     
     <textarea 
       class="text-preview" 
@@ -168,6 +219,17 @@
       placeholder="Selecciona texto en la página o escribe aquí para leerlo en voz alta"
       rows="5"
     ></textarea>
+    
+    <div class="translation-section" id="translationSection">
+      <label class="translation-label">Traducción:</label>
+      <textarea 
+        class="text-preview" 
+        id="translatedText"
+        placeholder="La traducción aparecerá aquí..."
+        rows="5"
+        readonly
+      ></textarea>
+    </div>
     
     <div class="controls">
       <button class="button" id="playBtn" disabled>
