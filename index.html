@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <style>
     body {
-      width: 400px;
+      width: 450px;
       margin: 0;
       padding: 0;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
@@ -16,40 +16,10 @@
       padding: 20px;
     }
     
-    .header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 15px;
-    }
-    
     h2 {
-      margin: 0;
+      margin: 0 0 15px 0;
       font-size: 18px;
       color: #fff;
-    }
-    
-    .translate-toggle {
-      background-color: #2d2d2d;
-      color: #fff;
-      border: 2px solid #3d3d3d;
-      border-radius: 6px;
-      padding: 8px 12px;
-      font-size: 14px;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-    
-    .translate-toggle:hover {
-      border-color: #7c5cdb;
-    }
-    
-    .translate-toggle.active {
-      background-color: #7c5cdb;
-      border-color: #7c5cdb;
     }
     
     .text-preview {
@@ -77,22 +47,6 @@
     .text-preview:focus {
       outline: none;
       border-color: #7c5cdb;
-    }
-    
-    .translation-section {
-      display: none;
-      margin-bottom: 15px;
-    }
-    
-    .translation-section.active {
-      display: block;
-    }
-    
-    .translation-label {
-      font-size: 13px;
-      color: #ccc;
-      margin-bottom: 6px;
-      display: block;
     }
     
     .controls {
@@ -142,6 +96,92 @@
     
     .button-stop:active {
       background-color: #991b1b;
+    }
+    
+    .button-translate {
+      background-color: #2563eb;
+    }
+    
+    .button-translate:hover {
+      background-color: #1d4ed8;
+    }
+    
+    .button-translate:active {
+      background-color: #1e40af;
+    }
+    
+    .translation-section {
+      background-color: #0d0d0d;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+      display: none;
+    }
+    
+    .translation-section.show {
+      display: block;
+    }
+    
+    .translation-main {
+      background-color: #2d2d2d;
+      border: 1px solid #3d3d3d;
+      border-radius: 6px;
+      padding: 12px;
+      margin-bottom: 12px;
+      color: #fff;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    
+    .translation-label {
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 6px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .translation-alternatives {
+      margin-top: 12px;
+    }
+    
+    .alternative-item {
+      background-color: #252525;
+      border: 1px solid #333;
+      border-radius: 6px;
+      padding: 10px;
+      margin-bottom: 8px;
+      font-size: 13px;
+      color: #ccc;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .alternative-item:hover {
+      background-color: #2d2d2d;
+      border-color: #7c5cdb;
+    }
+    
+    .alternative-item:active {
+      transform: scale(0.98);
+    }
+    
+    .alternative-number {
+      background-color: #3d3d3d;
+      color: #888;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      flex-shrink: 0;
     }
     
     .settings {
@@ -199,19 +239,34 @@
       color: #4ade80;
     }
     
+    .status.translating {
+      color: #3b82f6;
+    }
+    
     .icon {
+      font-size: 20px;
+    }
+    
+    .language-selectors {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .language-selectors select {
+      flex: 1;
+    }
+    
+    .language-arrow {
+      color: #888;
       font-size: 20px;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="header">
-      <h2>🔊 Lector de Texto</h2>
-      <button class="translate-toggle" id="translateToggle">
-        🌐 Traducir
-      </button>
-    </div>
+    <h2>🔊 Lector y Traductor OFFLINE</h2>
     
     <textarea 
       class="text-preview" 
@@ -219,17 +274,6 @@
       placeholder="Selecciona texto en la página o escribe aquí para leerlo en voz alta"
       rows="5"
     ></textarea>
-    
-    <div class="translation-section" id="translationSection">
-      <label class="translation-label">Traducción:</label>
-      <textarea 
-        class="text-preview" 
-        id="translatedText"
-        placeholder="La traducción aparecerá aquí..."
-        rows="5"
-        readonly
-      ></textarea>
-    </div>
     
     <div class="controls">
       <button class="button" id="playBtn" disabled>
@@ -240,6 +284,38 @@
         <span class="icon">⏹️</span>
         Detener
       </button>
+    </div>
+    
+    <div class="language-selectors">
+      <select id="sourceLang">
+        <option value="en">🇬🇧 Inglés</option>
+        <option value="es">🇪🇸 Español</option>
+        <option value="fr">🇫🇷 Francés</option>
+        <option value="de">🇩🇪 Alemán</option>
+        <option value="it">🇮🇹 Italiano</option>
+        <option value="pt">🇵🇹 Portugués</option>
+      </select>
+      <span class="language-arrow">→</span>
+      <select id="targetLang">
+        <option value="es">🇪🇸 Español</option>
+        <option value="en">🇬🇧 Inglés</option>
+        <option value="fr">🇫🇷 Francés</option>
+        <option value="de">🇩🇪 Alemán</option>
+        <option value="it">🇮🇹 Italiano</option>
+        <option value="pt">🇵🇹 Portugués</option>
+      </select>
+    </div>
+    
+    <button class="button button-translate" id="translateBtn" disabled>
+      <span class="icon">🌐</span>
+      Traducir
+    </button>
+    
+    <div class="translation-section" id="translationSection">
+      <div class="translation-label">Traducción Principal</div>
+      <div class="translation-main" id="translationMain"></div>
+      
+      <div class="translation-alternatives" id="translationAlternatives"></div>
     </div>
     
     <div class="settings">
